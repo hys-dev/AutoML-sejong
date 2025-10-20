@@ -23,3 +23,6 @@ def signup_view(request):
     else:
         form = UserForm()
     return render(request, 'users/signup.html', {'form': form})
+
+def detail01_view(request):
+    return render(request, 'detail/detail01.html')
