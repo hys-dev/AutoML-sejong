@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'sejong',
-    'rest_framework'
+    'rest_framework',
 ]
 
 REST_FRAMEWORK = {
