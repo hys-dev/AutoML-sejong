@@ -24,5 +24,8 @@ def signup_view(request):
         form = UserForm()
     return render(request, 'users/signup.html', {'form': form})
 
-def detail01_view(request):
-    return render(request, 'detail/detail01.html')
+def AutoML_view(request):
+    return render(request, 'detail/AutoML.html')
+
+def admin_user_view(request):
+    return render(request, 'admin/user.html')
