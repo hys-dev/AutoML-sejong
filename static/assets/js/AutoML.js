@@ -1,5 +1,25 @@
 let charts = {};
 
+document.getElementById('image-zip').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const res = await fetch('/api/upload-zip/', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!res.ok) throw new Error('업로드 실패');
+    const result = await res.json();
+    alert(`업로드 성공: ${result.filename}`);
+  } catch (err) {
+    alert(err.message);
+  }
+});
 
 function showTab(tab) {
     document.getElementById('panel-image').classList.add('hidden');
