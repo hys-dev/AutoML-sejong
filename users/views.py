@@ -26,6 +26,3 @@ def signup_view(request):
 
 def AutoML_view(request):
     return render(request, 'detail/AutoML.html')
-
-def admin_user_view(request):
-    return render(request, 'admin/user.html')
