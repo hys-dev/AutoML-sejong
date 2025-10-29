@@ -16,12 +16,12 @@ Including another URLconf0
 """
 from django.contrib import admin
 from django.urls import path, include
-from sejong import views
+from automl import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('sejong/', include('sejong.urls')),
     path('users/', include('users.urls')),
     path('api/', include('rest_framework.urls')),
+    path('automl/', include('automl.urls')),
     path('', views.index, name='index'),
 ]

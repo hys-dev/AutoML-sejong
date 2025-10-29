@@ -58,6 +58,7 @@ function initChart(id){
 
 
 function startSearch(kind){
+/*
     const logEl = document.getElementById(kind==='image'?'image-log':'multi-log');
     logEl.textContent='';
     let i=0;
@@ -67,6 +68,50 @@ function startSearch(kind){
         logEl.scrollTop=logEl.scrollHeight;
         if(i>=5) clearInterval(interval);
     },800);
+*/
+    const layer_candidates = document.querySelectorAll('input[name="layer_candidates"]');
+    const selected = [];
+
+    layer_candidates.forEach(candidate => {
+        if(candidate.checked) {
+            selected.push(candidate.value);
+        }
+    });
+
+    console.log(selected);
+
+    let max_epochs = document.querySelector('input[name="max_epochs"]').value;
+    let batch_size = document.querySelector('input[name="batch_size"]').value;
+    let learning_rate = document.querySelector('input[name="learning_rate"]').value;
+    let momentum = document.querySelector('input[name="momentum"]').value;
+    let weight_decay = document.querySelector('input[name="weight_decay"]').value;
+    let gradient_clip = document.querySelector('input[name="gradient_clip"]').value;
+    let width = document.querySelector('input[name="width"]').value;
+    let num_of_cells = document.querySelector('input[name="num_of_cells"]').value;
+    let aux_loss_weight = document.querySelector('input[name="aux_loss_weight"]').value;
+
+    $.ajax({
+        type:'POST',
+        url:'/automl/start-image-nas',
+        data:{
+            "layer_candidates": selected,
+            "max_epochs": max_epochs,
+            "batch_size": batch_size,
+            "learning_rate": learning_rate,
+            "momentum": momentum,
+            "weight_decay": weight_decay,
+            "gradient_clip": gradient_clip,
+            "width": width,
+            "num_of_cells": num_of_cells,
+            "aux_loss_weight": aux_loss_weight
+        },
+        success: function(data) {
+            console.log("ajax success");
+        },
+        error: function(xhr, errmsg, err) {
+            console.log(errmsg);
+        }
+    })
 }
 
 

@@ -9,5 +9,5 @@ urlpatterns = [
     path('signup/', views.signup_view, name='signup'),
     path('AutoML/', views.AutoML_view, name='AutoML'),
     path("api/upload-zip/", views.upload_zip, name="upload_zip"),
-    path("api/upload-list/", views.get_upload_list, name="get_upload_list"),
+    path("api/upload-list/", views.get_upload_list, name="get_upload_list")
 ]

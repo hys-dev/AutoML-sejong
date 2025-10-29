@@ -37,7 +37,7 @@
     .tab-active { border-bottom: 2px solid #2563eb; color: #2563eb; font-weight: 600; }
     .tab-inactive { border-bottom: 2px solid transparent; color: #4b5563; }
   </style>
-
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <!-- [Head] end -->
 <!-- [Body] Start -->
@@ -127,37 +127,42 @@
             </label>
             <label class="block text-sm mb-2">Layer Candidates</label>
             <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
-              <label><input type="checkbox" checked> MaxPool</label>
-              <label><input type="checkbox" checked> AvgPool</label>
-              <label><input type="checkbox"> SkipConnect</label>
-              <label><input type="checkbox"> SepConv3x3</label>
-              <label><input type="checkbox"> SepConv5x5</label>
-              <label><input type="checkbox"> DilConv3x3</label>
-              <label><input type="checkbox"> DilConv5x5</label>
+              <label><input name="layer_candidates" type="checkbox" value="max_pool" checked> MaxPool</label>
+              <label><input name="layer_candidates" type="checkbox" value="avg_pool" checked> AvgPool</label>
+              <label><input name="layer_candidates" type="checkbox" value="skip_connect"> SkipConnect</label>
+              <label><input name="layer_candidates" type="checkbox" value="sep_conv_3x3"> SepConv3x3</label>
+              <label><input name="layer_candidates" type="checkbox" value="sep_conv_5x5"> SepConv5x5</label>
+              <label><input name="layer_candidates" type="checkbox" value="dil_conv_3x3"> DilConv3x3</label>
+              <label><input name="layer_candidates" type="checkbox" value="dil_conv_5x5"> DilConv5x5</label>
             </div>
             <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
-              <label class="block text-sm mb-2">Max Epochs <input type="number" class="w-full border rounded p-2 mt-1"
-                                                                  value="20"></label>
-              <label class="block text-sm mb-2">Batch Size <input type="number" class="w-full border rounded p-2 mt-1"
-                                                                  value="32"></label>
-              <label class="block text-sm mb-2">Learning Rate <input type="number"
-                                                                     class="w-full border rounded p-2 mt-1"
-                                                                     value="64"></label>
-              <label class="block text-sm mb-2">Momentum <input type="number" class="w-full border rounded p-2 mt-1"
-                                                                value="64"></label>
-              <label class="block text-sm mb-2">Weight Decay <input type="number" class="w-full border rounded p-2 mt-1"
-                                                                    value="64"></label>
-              <label class="block text-sm mb-2">Gradient Clip <input type="number"
-                                                                     class="w-full border rounded p-2 mt-1"
-                                                                     value="64"></label>
-              <label class="block text-sm mb-2">Width <input type="number" class="w-full border rounded p-2 mt-1"
-                                                             value="64"></label>
-              <label class="block text-sm mb-2">Number of Cells <input type="number"
-                                                                       class="w-full border rounded p-2 mt-1"
-                                                                       value="64"></label>
-              <label class="block text-sm mb-2">Auxiliary Loss Weight <input type="number"
-                                                                             class="w-full border rounded p-2 mt-1"
-                                                                             value="64"></label>
+              <label class="block text-sm mb-2">Max Epochs
+                <input name="max_epochs" type="number" class="w-full border rounded p-2 mt-1" value="20">
+              </label>
+              <label class="block text-sm mb-2">Batch Size
+                <input name="batch_size" type="number" class="w-full border rounded p-2 mt-1" value="32">
+              </label>
+              <label class="block text-sm mb-2">Learning Rate
+                <input name="learning_rate" type="number" class="w-full border rounded p-2 mt-1" value="64">
+              </label>
+              <label class="block text-sm mb-2">Momentum
+                <input name="momentum" type="number" class="w-full border rounded p-2 mt-1" value="64">
+              </label>
+              <label class="block text-sm mb-2">Weight Decay
+                <input name="weight_decay" type="number" class="w-full border rounded p-2 mt-1" value="64">
+              </label>
+              <label class="block text-sm mb-2">Gradient Clip
+                <input name="gradient_clip" type="number" class="w-full border rounded p-2 mt-1" value="64">
+              </label>
+              <label class="block text-sm mb-2">Width
+                <input name="width" type="number" class="w-full border rounded p-2 mt-1" value="64">
+              </label>
+              <label class="block text-sm mb-2">Number of Cells
+                <input name="num_of_cells" type="number" class="w-full border rounded p-2 mt-1" value="64">
+              </label>
+              <label class="block text-sm mb-2">Auxiliary Loss Weight
+                <input name="aux_loss_weight" type="number" class="w-full border rounded p-2 mt-1" value="64">
+              </label>
             </div>
             <div class="flex space-x-2 mt-3">
               <button class="px-3 py-2 bg-green-600 text-white rounded" onclick="startSearch('image')">Search</button>
@@ -223,7 +228,8 @@
             </div>
             <h3 class="font-semibold mb-2">Evolution Hyperparameter</h3>
             <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
-              <label class="block text-sm mb-2">Max Epochs <input type="number" class="w-full border rounded p-2 mt-1"
+              <label class="block text-sm mb-2">Max Epochs <input type="number" step="0.1"
+                                                                  class="w-full border rounded p-2 mt-1"
                                                                   value="50"></label>
               <label class="block text-sm mb-2">Batch Size <input type="number" class="w-full border rounded p-2 mt-1"
                                                                   value="50"></label>
