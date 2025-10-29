@@ -1,25 +1,40 @@
 let charts = {};
 
-document.getElementById('image-zip').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+async function uploadFile(inputId, category) {
+  const input = document.getElementById(inputId);
+  const file = input.files[0];
+  if (!file) return alert('파일을 선택해주세요.');
 
   const formData = new FormData();
   formData.append('file', file);
+  formData.append('category', category);
 
-  try {
-    const res = await fetch('/api/upload-zip/', {
-      method: 'POST',
-      body: formData,
-    });
+  const res = await fetch('/api/upload-zip/', { method: 'POST', body: formData });
+  const data = await res.json();
 
-    if (!res.ok) throw new Error('업로드 실패');
-    const result = await res.json();
-    alert(`업로드 성공: ${result.filename}`);
-  } catch (err) {
-    alert(err.message);
+  if (data.success) {
+    alert(`[${category}] 업로드 성공: ${data.filename}`);
+    loadUploadList(category);
+  } else {
+    alert('업로드 실패');
   }
-});
+}
+
+async function loadUploadList(category) {
+  const res = await fetch(`/api/upload-list/?category=${category}`);
+  const data = await res.json();
+  const listId = category === 'image' ? 'image-upload-list' : 'multi-upload-list';
+  const container = document.getElementById(listId);
+  container.innerHTML = data.files.map(f => `
+    <li class="flex justify-between border-b py-1">
+      <span>${f.filename}</span>
+      <span class="text-xs text-gray-500">${f.uploaded_at}</span>
+    </li>`).join('');
+}
+
+// 초기 로드
+loadUploadList('image');
+loadUploadList('multi');
 
 function showTab(tab) {
     document.getElementById('panel-image').classList.add('hidden');
@@ -58,7 +73,7 @@ function initChart(id){
 
 
 function startSearch(kind){
-/*
+    /*
     const logEl = document.getElementById(kind==='image'?'image-log':'multi-log');
     logEl.textContent='';
     let i=0;
@@ -68,7 +83,7 @@ function startSearch(kind){
         logEl.scrollTop=logEl.scrollHeight;
         if(i>=5) clearInterval(interval);
     },800);
-*/
+    */
     const layer_candidates = document.querySelectorAll('input[name="layer_candidates"]');
     const selected = [];
 
