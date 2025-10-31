@@ -1,7 +1,13 @@
+import os
+import subprocess
+
+from django.core.files.storage import default_storage
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
+from automl.models import UploadedZip
+from config import settings
 
 # Create your views here.
 
@@ -11,16 +17,32 @@ def index(request):
 @csrf_exempt
 def start_image_nas(request):
     if request.method == "POST":
+        dataset_name = request.POST.get("dataset_name")
         layer_candidates = request.POST.getlist('layer_candidates[]')  # 배열일 경우 getlist로 받고 이름 뒤에 꼭 [] 표시
         max_epochs = request.POST.get('max_epochs')
+        strategy = request.POST.get('strategy')
         batch_size = request.POST.get('batch_size')
         learning_rate = request.POST.get('learning_rate')
         momentum = request.POST.get('momentum')
         weight_decay = request.POST.get('weight_decay')
-        gradient_clip = request.POST.get('gradient_clip')
+        gradient_clip_val = request.POST.get('gradient_clip')
         width = request.POST.get('width')
         num_of_cells = request.POST.get('num_of_cells')
         aux_loss_weight = request.POST.get('aux_loss_weight')
+
+        result = subprocess.run(
+            ["python", "nas.py", "--dataset_name", dataset_name, "--layer_operations", layer_candidates, "--max_epochs", max_epochs, "--strategy", strategy,
+            "--batch_size", batch_size, "--learning_rate", learning_rate, "--momentum", momentum, "--weight_decay", weight_decay,
+            "gradient_clip_val", gradient_clip_val, "--width", width, "num_of_cells", num_of_cells, "auxiliary_loss_weight", aux_loss_weight],
+            capture_output=True,
+            text=True
+        )
+
+        output = result.stdout
+        print("=== OUTPUT ===")
+        print(output)
+
+
 
     return JsonResponse({"success": True})
 
