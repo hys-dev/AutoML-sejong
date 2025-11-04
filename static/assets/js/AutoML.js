@@ -95,6 +95,7 @@ function startSearch(kind){
 
     console.log(selected);
 
+    let dataset_name = "cifar10";
     let strategy = document.getElementById('strategy').value;
     let max_epochs = document.querySelector('input[name="max_epochs"]').value;
     let batch_size = document.querySelector('input[name="batch_size"]').value;
@@ -108,10 +109,11 @@ function startSearch(kind){
 
     $.ajax({
         type:'POST',
-        url:'/automl/start-image-nas',
+        url:'/automl/start-image-nas/',
         data:{
             "dataset_name": dataset_name,
             "layer_candidates": selected,
+            "strategy": strategy,
             "max_epochs": max_epochs,
             "batch_size": batch_size,
             "learning_rate": learning_rate,
