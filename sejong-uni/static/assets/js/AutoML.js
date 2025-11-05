@@ -9,19 +9,31 @@ async function uploadFile(inputId, category) {
   formData.append('file', file);
   formData.append('category', category);
 
-  const res = await fetch('/api/upload-zip/', { method: 'POST', body: formData });
+  const res = await fetch('/automl/api/upload-zip/', { method: 'POST', body: formData });
   const data = await res.json();
 
   if (data.success) {
     alert(`[${category}] 업로드 성공: ${data.filename}`);
-    loadUploadList(category);
+    //loadUploadList(category);
   } else {
     alert('업로드 실패');
   }
+
+  // 이미지 미리보기 영역
+  const previewWrap = document.getElementById(category === "image" ? "image-preview" : "multi-preview");
+  previewWrap.innerHTML = "";
+
+  // 서버에서 반환된 이미지 경로로 UI 생성
+  data.images.forEach(src => {
+    const img = document.createElement("img");
+    img.src = src;
+    img.className = "ml-2 px-3 py-2 bg-blue-600 text-white rounded mt-2";
+    previewWrap.appendChild(img);
+  });
 }
 
 async function loadUploadList(category) {
-  const res = await fetch(`/api/upload-list/?category=${category}`);
+  const res = await fetch('/automl/api/upload-list/?category=${category}');
   const data = await res.json();
   const listId = category === 'image' ? 'image-upload-list' : 'multi-upload-list';
   const container = document.getElementById(listId);
@@ -33,8 +45,8 @@ async function loadUploadList(category) {
 }
 
 // 초기 로드
-loadUploadList('image');
-loadUploadList('multi');
+//loadUploadList('image');
+//loadUploadList('multi');
 
 function showTab(tab) {
     document.getElementById('panel-image').classList.add('hidden');

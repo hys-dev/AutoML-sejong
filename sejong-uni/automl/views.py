@@ -2,6 +2,7 @@ import json
 import os
 import subprocess
 import sys
+import zipfile
 
 from django.core.files.storage import default_storage
 from django.http import JsonResponse, HttpResponse
@@ -86,12 +87,39 @@ def upload_zip(request):
         category = request.POST.get("category", "image")
         file = request.FILES["file"]
 
-        upload_dir = os.path.join(settings.MEDIA_ROOT, "uploads")
+        upload_dir = os.path.join(settings.MEDIA_ROOT, "uploads/" + category)
         os.makedirs(upload_dir, exist_ok=True)
 
-        file_path = default_storage.save(os.path.join("uploads", file.name), file)
-        UploadedZip.objects.create(category=category, file=file_path)
-        return JsonResponse({"success": True, "filename": file.name, "category": category})
+        file_path = default_storage.save(os.path.join("uploads/" + category, file.name), file)
+        #UploadedZip.objects.create(category=category, file=file_path)
+        
+        full_zip_path = os.path.join(settings.MEDIA_ROOT, file_path)
+        
+         # 압축 해제할 폴더명 (zip 파일명 기반)
+        extract_folder_name = file.name.replace(".zip", "")
+        extract_folder = os.path.join(settings.MEDIA_ROOT, "uploads/" + category, extract_folder_name)
+        
+        # ZIP 압축 해제
+        with zipfile.ZipFile(full_zip_path, 'r') as zip_ref:
+            zip_ref.extractall(extract_folder)
+
+        # 이미지 파일 목록 수집 (jpg/png/jpeg만)
+        allowed_ext = [".jpg", ".jpeg", ".png"]
+        preview_files = [
+            f"/media/uploads/{extract_folder_name}/{f}"
+            for f in os.listdir(extract_folder)
+            if os.path.splitext(f)[1].lower() in allowed_ext
+        ]
+
+        # DB 저장
+        #UploadedZip.objects.create(category=category, file=file_path)
+
+        return JsonResponse({
+            "success": True,
+            "filename": file.name,
+            "images": preview_files,  # 프론트에서 바로 미리보기 가능
+        })
+
     return JsonResponse({"success": False, "error": "No file uploaded"}, status=400)
 
 
