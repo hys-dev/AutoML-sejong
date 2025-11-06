@@ -138,31 +138,39 @@
             </div>
             <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
               <label class="block text-sm mb-2">Max Epochs
-                <input name="max_epochs" type="number" class="w-full border rounded p-2 mt-1" value="20">
+                <input name="max_epochs" type="number" class="w-full border rounded p-2 mt-1" value="50">
               </label>
               <label class="block text-sm mb-2">Batch Size
-                <input name="batch_size" type="number" class="w-full border rounded p-2 mt-1" value="32">
+                <input name="batch_size" type="number" class="w-full border rounded p-2 mt-1" value="64">
               </label>
               <label class="block text-sm mb-2">Learning Rate
-                <input name="learning_rate" type="number" class="w-full border rounded p-2 mt-1" value="64">
+                <input list="lr-list" name="learning_rate" type="number" class="w-full border rounded p-2 mt-1" value="0" step="0.01">
+                <datalist id="lr-list">
+                  <option value="0.0005"></option>
+                  <option value="0.001"></option>
+                  <option value="0.005"></option>
+                  <option value="0.01"></option>
+                  <option value="0.05"></option>
+                  <option value="0.1"></option>
+                </datalist>
               </label>
               <label class="block text-sm mb-2">Momentum
-                <input name="momentum" type="number" class="w-full border rounded p-2 mt-1" value="64">
+                <input name="momentum" type="number" class="w-full border rounded p-2 mt-1" value="0.8">
               </label>
               <label class="block text-sm mb-2">Weight Decay
-                <input name="weight_decay" type="number" class="w-full border rounded p-2 mt-1" value="64">
+                <input name="weight_decay" type="number" class="w-full border rounded p-2 mt-1" value="0.05">
               </label>
               <label class="block text-sm mb-2">Gradient Clip
-                <input name="gradient_clip" type="number" class="w-full border rounded p-2 mt-1" value="64">
+                <input name="gradient_clip" type="number" class="w-full border rounded p-2 mt-1" value="1">
               </label>
               <label class="block text-sm mb-2">Width
                 <input name="width" type="number" class="w-full border rounded p-2 mt-1" value="64">
               </label>
               <label class="block text-sm mb-2">Number of Cells
-                <input name="num_of_cells" type="number" class="w-full border rounded p-2 mt-1" value="64">
+                <input name="num_of_cells" type="number" class="w-full border rounded p-2 mt-1" value="32">
               </label>
               <label class="block text-sm mb-2">Auxiliary Loss Weight
-                <input name="aux_loss_weight" type="number" class="w-full border rounded p-2 mt-1" value="64">
+                <input name="aux_loss_weight" type="number" class="w-full border rounded p-2 mt-1" value="0">
               </label>
             </div>
             <div class="flex space-x-2 mt-3">
@@ -210,23 +218,31 @@
               <label class="block text-sm mb-2">Learning Rate <input type="number"
                                                                      class="w-full border rounded p-2 mt-1"
                                                                      value="50"></label>
-              <label class="block text-sm mb-2">Optimizer
-                <select class="w-full border rounded p-2 mt-1">
-                  <option>SGD</option>
-                  <option>Adam</option>
-                  <option>AdamW</option>
-                </select>
-              </label>
-              <label class="block text-sm mb-2">LR Scheduler <input type="number" class="w-full border rounded p-2 mt-1"
-                                                                    value="50"></label>
-              <label class="block text-sm mb-2">Weight Decay <input type="number" class="w-full border rounded p-2 mt-1"
-                                                                    value="50"></label>
-              <label class="block text-sm mb-2">Warmup Epochs <input type="number"
-                                                                     class="w-full border rounded p-2 mt-1"
-                                                                     value="50"></label>
               <label class="block text-sm mb-2">Min Learning Rate <input type="number"
                                                                          class="w-full border rounded p-2 mt-1"
                                                                          value="50"></label>
+              <label class="block text-sm mb-2">Warmup Epochs <input type="number"
+                                                                     class="w-full border rounded p-2 mt-1"
+                                                                     value="50"></label>
+              <label class="block text-sm mb-2">Weight Decay <input type="number" class="w-full border rounded p-2 mt-1"
+                                                                    value="50"></label>
+              <label class="block text-sm mb-2">Optimizer
+                <select class="w-full border rounded p-2 mt-1">
+                  <option value="sgd">SGD</option>
+                  <option value="adam">Adam</option>
+                  <option value="adamw">AdamW</option>
+                  <option value="rmsprop">rmsprop</option>
+                </select>
+              </label>
+              <label class="block text-sm mb-2">LR Scheduler
+                <select class="w-full border rounded p-2 mt-1">
+                  <option value="cosine">cosine</option>
+                  <option value="plateau">plateau</option>
+                  <option value="tanh">tanh</option>
+                  <option value="step">step</option>
+                </select>
+              </label>
+
             </div>
             <h3 class="font-semibold mb-2">Evolution Hyperparameter</h3>
             <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
@@ -317,7 +333,6 @@
 
 
 <script>font_change("Public-Sans");</script>
-
 
 </body>
 <!-- [Body] end -->

@@ -36,7 +36,7 @@ def main():
     config.set_exp_key(exp_key)
     config.set_gpu_id(gpu_id)
     print(exp_key)
-    print(f"RANDOM_STRING:{exp_key}")
+    print(f"[EXP_KEY]{exp_key}")
 
     arch = nas_search_experiment(config)
     print(arch)

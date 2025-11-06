@@ -9,7 +9,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from automl.models import UploadedZip
+from automl.models import UploadedZip, ImageNas
 from config import settings
 
 # Create your views here.
@@ -59,15 +59,26 @@ def start_image_nas(request):
             str(aux_loss_weight),
         ]
 
-        result = subprocess.run(cmd, capture_output=True, text=True, cwd=image_nas_dir, encoding="utf-8")
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=image_nas_dir,
+                                   encoding="utf-8")
+        exp_key = ""
 
-        print("stdout: ", result.stdout)
-        print("stderr: ", result.stderr)
+        for line in process.stdout:
+            line = line.strip()
+            if line.startswith("[EXP_KEY]"):
+                exp_key = line.replace("[EXP_KEY]", "").strip()
+
+        if (exp_key != ""):
+            new_image_nas = ImageNas(exp_key=exp_key, dataset_name=dataset_name, layer_candidates=layer_candidates_json,
+                                 max_epochs=max_epochs,
+                                 strategy=strategy, batch_size=batch_size, learning_rate=learning_rate,
+                                 momentum=momentum,
+                                 weight_decay=weight_decay, gradient_clip_val=gradient_clip_val, width=width,
+                                 num_of_cells=num_of_cells, aux_loss_weight=aux_loss_weight)
+            new_image_nas.save()
 
         return JsonResponse({
             "status": "ok",
-            "stdout": result.stdout,
-            "stderr": result.stderr,
         })
 
     except Exception as e:
