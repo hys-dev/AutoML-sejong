@@ -96,53 +96,108 @@ function startSearch(kind){
         if(i>=5) clearInterval(interval);
     },800);
     */
-    const layer_candidates = document.querySelectorAll('input[name="layer_candidates"]');
-    const selected = [];
 
-    layer_candidates.forEach(candidate => {
-        if(candidate.checked) {
-            selected.push(candidate.value);
-        }
-    });
+    if(kind == "image") {
+        const layer_candidates = document.querySelectorAll('input[name="layer_candidates"]');
+        const selected = [];
 
-    console.log(selected);
+        layer_candidates.forEach(candidate => {
+            if(candidate.checked) {
+                selected.push(candidate.value);
+            }
+        });
 
-    let dataset_name = "cifar10";
-    let strategy = document.getElementById('strategy').value;
-    let max_epochs = document.querySelector('input[name="max_epochs"]').value;
-    let batch_size = document.querySelector('input[name="batch_size"]').value;
-    let learning_rate = document.querySelector('input[name="learning_rate"]').value;
-    let momentum = document.querySelector('input[name="momentum"]').value;
-    let weight_decay = document.querySelector('input[name="weight_decay"]').value;
-    let gradient_clip = document.querySelector('input[name="gradient_clip"]').value;
-    let width = document.querySelector('input[name="width"]').value;
-    let num_of_cells = document.querySelector('input[name="num_of_cells"]').value;
-    let aux_loss_weight = document.querySelector('input[name="aux_loss_weight"]').value;
+        console.log(selected);
 
-    $.ajax({
-        type:'POST',
-        url:'/automl/start-image-nas/',
-        data:{
-            "dataset_name": dataset_name,
-            "layer_candidates": selected,
-            "strategy": strategy,
-            "max_epochs": max_epochs,
-            "batch_size": batch_size,
-            "learning_rate": learning_rate,
-            "momentum": momentum,
-            "weight_decay": weight_decay,
-            "gradient_clip": gradient_clip,
-            "width": width,
-            "num_of_cells": num_of_cells,
-            "aux_loss_weight": aux_loss_weight
-        },
-        success: function(data) {
-            console.log("ajax success");
-        },
-        error: function(xhr, errmsg, err) {
-            console.log(errmsg);
-        }
-    })
+        let dataset_name = "cifar10";
+        let strategy = document.getElementById('strategy').value;
+        let max_epochs = document.querySelector('input[name="max_epochs"]').value;
+        let batch_size = document.querySelector('input[name="batch_size"]').value;
+        let learning_rate = document.querySelector('input[name="learning_rate"]').value;
+        let momentum = document.querySelector('input[name="momentum"]').value;
+        let weight_decay = document.querySelector('input[name="weight_decay"]').value;
+        let gradient_clip = document.querySelector('input[name="gradient_clip"]').value;
+        let width = document.querySelector('input[name="width"]').value;
+        let num_of_cells = document.querySelector('input[name="num_of_cells"]').value;
+        let aux_loss_weight = document.querySelector('input[name="aux_loss_weight"]').value;
+
+        $.ajax({
+            type:'POST',
+            url:'/automl/start-image-nas/',
+            data:{
+                "dataset_name": dataset_name,
+                "max_epochs": max_epochs,
+                "batch_size": batch_size,
+                "learning_rate": learning_rate,
+                "momentum": momentum,
+                "weight_decay": weight_decay,
+                "gradient_clip": gradient_clip,
+                "width": width,
+                "num_of_cells": num_of_cells,
+                "aux_loss_weight": aux_loss_weight,
+                "strategy": strategy,
+                "layer_candidates": selected
+            },
+            success: function(data) {
+                console.log("ajax success");
+                console.log("data: " + JSON.stringify(data));
+                $("#image_pid").val(data.pid);
+                $("#image_exp_key").val(data.exp_key);
+                $("#image-search").addClass("hidden");
+                $("#image-stop").removeClass("hidden");
+            },
+            error: function(xhr, errmsg, err) {
+                console.log(errmsg);
+            }
+        })
+    }
+    else if (kind == "multi") {
+        let dataset_name = "cifar10";
+        let max_epochs = document.querySelector('input[name="multi_max_epochs"]').value;
+        let batch_size = document.querySelector('input[name="multi_batch_size"]').value;
+        let learning_rate = document.querySelector('input[name="multi_learning_rate"]').value;
+        let min_learning_rate = document.querySelector('input[name="multi_min_learning_rate"]').value;
+        let warmup_epochs = document.querySelector('input[name="multi_warmup_epochs"]').value;
+        let weight_decay = document.querySelector('input[name="multi_weight_decay"]').value;
+        let multi_optimizer = document.getElementById("multi_optimizer").value;
+        let multi_lr_scheduler = document.getElementById("multi_lr_scheduler").value;
+
+        let evo_max_epochs = document.querySelector('input[name="evo_max_epochs"]').value;
+        let evo_batch_size = document.querySelector('input[name="evo_batch_size"]').value;
+        let evo_min_param_limits = document.querySelector('input[name="evo_min_param_limits"]').value;
+        let evo_param_limits = document.getElementById("evo_param_limits").value;
+        let evo_select_num = document.querySelector('input[name="evo_select_num"]').value;
+        let evo_population_num = document.querySelector('input[name="evo_population_num"]').value;
+        let evo_crossover_num = document.querySelector('input[name="evo_crossover_num"]').value;
+        let evo_mutation_num = document.querySelector('input[name="evo_mutation_num"]').value;
+    }
+
+}
+
+function endSearch(kind) {
+    if(kind == "image") {
+        let pid = $("#image_pid").val()
+        let exp_key = $("#image_exp_key").val()
+        $.ajax({
+            type:'POST',
+            url:'/automl/end-image-nas/',
+            data:{
+                "pid": pid,
+                "exp_key": exp_key
+            },
+            success: function(data) {
+                console.log("ajax success");
+                console.log("data: " + JSON.stringify(data));
+                $("#image_pid").val("");
+                $("#image_exp_key").val("");
+                $("#image-search").addClass("hidden");
+                $("#image-stop").removeClass("hidden");
+            },
+            error: function(xhr, errmsg, err) {
+                console.log(errmsg);
+            }
+        });
+    }
 }
 
 

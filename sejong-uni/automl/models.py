@@ -16,11 +16,10 @@ class UploadedZip(models.Model):
 
 class ImageNas(models.Model):
     image_nas_id = models.AutoField(primary_key=True)
-    user_id = models.IntegerField() # auth_user 테이블의 id
+    user_id = models.IntegerField(null=True) # auth_user 테이블의 id(cd)
     exp_key = models.CharField() # 각 실험을 특정하는 랜덤 문자열
     start_time = models.DateTimeField(auto_now_add=True)
-    end_time = models.DateTimeField()
-    search_algorithm = models.CharField(max_length=100)
+    end_time = models.DateTimeField(null=True)
     dataset_name = models.CharField(max_length=100)
     layer_candidates = models.JSONField()
     max_epochs = models.IntegerField()
@@ -33,8 +32,8 @@ class ImageNas(models.Model):
     width = models.IntegerField()
     num_of_cells = models.IntegerField()
     aux_loss_weight = models.FloatField()
-    drop_path_prob = models.IntegerField()
-    use_yn = models.CharField(max_length=1)
+    drop_path_prob = models.CharField(null=True)
+    use_yn = models.CharField(max_length=1, default="y")
 
 class MultimodalNas(models.Model):
     multimodal_nas_id = models.AutoField(primary_key=True)

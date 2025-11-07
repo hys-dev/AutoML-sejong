@@ -3,16 +3,22 @@ import os
 import subprocess
 import sys
 import zipfile
+import redis
+import threading
 
 from django.core.files.storage import default_storage
+from django.db import close_old_connections
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 
 from automl.models import UploadedZip, ImageNas
 from config import settings
 
 # Create your views here.
+
+processes = {}
 
 def index(request):
     return HttpResponse("hello world")
@@ -20,6 +26,10 @@ def index(request):
 @csrf_exempt
 def start_image_nas(request):
     print("views.py start_image_nas")
+    user_id = "0"
+    if request.user.is_authenticated:
+        user_id = request.user.username
+
     dataset_name = request.POST.get("dataset_name")
     layer_candidates = request.POST.getlist('layer_candidates[]')  # 배열일 경우 getlist로 받고 이름 뒤에 꼭 [] 표시
     max_epochs = request.POST.get('max_epochs')
@@ -37,48 +47,66 @@ def start_image_nas(request):
 
     layer_candidates_json = json.dumps(layer_candidates)
 
+    print("subprocess.run")
+    image_nas_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../image_nas"))
+    nas_py = os.path.join(image_nas_dir, "nas.py")
 
+    cmd = [
+        sys.executable, nas_py,
+        str(dataset_name),
+        layer_candidates_json,
+        str(max_epochs),
+        str(strategy),
+        str(batch_size),
+        str(learning_rate),
+        str(momentum),
+        str(weight_decay),
+        str(gradient_clip_val),
+        str(width),
+        str(num_of_cells),
+        str(aux_loss_weight),
+    ]
+
+    print(layer_candidates_json)
+
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=image_nas_dir,
+                               encoding="utf-8")
     try:
-        print("subprocess.run")
-        image_nas_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../image_nas"))
-        nas_py = os.path.join(image_nas_dir, "nas.py")
-
-        cmd = [
-            sys.executable, nas_py,
-            str(dataset_name),
-            layer_candidates_json,
-            str(max_epochs),
-            str(strategy),
-            str(batch_size),
-            str(learning_rate),
-            str(momentum),
-            str(weight_decay),
-            str(gradient_clip_val),
-            str(width),
-            str(num_of_cells),
-            str(aux_loss_weight),
-        ]
-
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=image_nas_dir,
-                                   encoding="utf-8")
+        pid = process.pid
+        processes[pid] = process
         exp_key = ""
 
-        for line in process.stdout:
-            line = line.strip()
-            if line.startswith("[EXP_KEY]"):
-                exp_key = line.replace("[EXP_KEY]", "").strip()
+        stdout, stderr = process.communicate()
 
-        if (exp_key != ""):
+        for line in stdout.splitlines():
+            if line.startswith("[EXP_KEY]"):
+                exp_key = line.replace("[EXP_KEY]", "").strip() or None
+
+        if exp_key:
             new_image_nas = ImageNas(exp_key=exp_key, dataset_name=dataset_name, layer_candidates=layer_candidates_json,
-                                 max_epochs=max_epochs,
+                                 max_epochs=max_epochs, user_id=user_id,
                                  strategy=strategy, batch_size=batch_size, learning_rate=learning_rate,
                                  momentum=momentum,
                                  weight_decay=weight_decay, gradient_clip_val=gradient_clip_val, width=width,
                                  num_of_cells=num_of_cells, aux_loss_weight=aux_loss_weight)
             new_image_nas.save()
 
+            def monitor():
+                close_old_connections()
+                process.wait()
+                from automl.models import ImageNas
+                from django.utils import timezone
+                ImageNas.objects.filter(exp_key=exp_key).update(
+                    end_time=timezone.now()
+                )
+                processes.pop(pid, None)
+
+            threading.Thread(target=monitor, daemon=True).start()
+
         return JsonResponse({
-            "status": "ok",
+            "status": "started",
+            "pid": pid,
+            "exp_key": exp_key
         })
 
     except Exception as e:
@@ -88,6 +116,57 @@ def start_image_nas(request):
             "message": str(e),
         })
 
+@csrf_exempt
+def start_multimodal_nas(request):
+    print("views.py start_multimodal_nas")
+    dataset_name = request.POST.get("dataset_name")
+    max_epochs = request.POST.get('max_epochs')
+    batch_size = request.POST.get('batch_size')
+    learning_rate = request.POST.get('learning_rate')
+    min_learning_rate = request.POST.get('min_learning_rate')
+    warmup_epochs = request.POST.get('warmup_epochs')
+    weight_decay = request.POST.get('weight_decay')
+    optimizer = request.POST.get('optimizer')
+    lr_scheduler = request.POST.get('lr_scheduler')
+
+    multimodal_nas_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../multimodal_nas"))
+    nas_py = os.path.join(multimodal_nas_dir, "nas.py")
+
+    cmd = [
+        sys.executable, nas_py,
+        str(dataset_name),
+        str(max_epochs),
+        str(batch_size),
+        str(learning_rate),
+        str(min_learning_rate),
+        str(warmup_epochs),
+        str(weight_decay),
+        str(optimizer),
+        str(lr_scheduler),
+    ]
+
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=multimodal_nas_dir,
+                               encoding="utf-8")
+    exp_key = ""
+
+    for line in process.stdout:
+        line = line.strip()
+        if line.startswith("[EXP_KEY]"):
+            exp_key = line.replace("[EXP_KEY]", "").strip()
+
+@csrf_exempt
+def end_image_nas(request):
+    print("views.py end_image_nas")
+    pid = int(request.POST.get("pid"))
+    exp_key = request.POST.get("exp_key")
+    process = processes.get(pid)
+    if process and process.poll() is None:
+        process.kill()
+        ImageNas.objects.filter(exp_key=exp_key).update(endTime=timezone.now())
+        processes.pop(pid, None)
+        return JsonResponse({"status": "terminated"})
+    else:
+        return JsonResponse({"status": "not_running"})
 
 def AutoML_view(request):
     return render(request, 'detail/AutoML.html')
