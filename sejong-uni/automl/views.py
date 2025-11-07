@@ -86,18 +86,17 @@ def upload_zip(request):
     if request.method == "POST" and request.FILES.get("file"):
         category = request.POST.get("category", "image")
         file = request.FILES["file"]
-
-        upload_dir = os.path.join(settings.MEDIA_ROOT, "uploads/" + category)
-        os.makedirs(upload_dir, exist_ok=True)
-
-        file_path = default_storage.save(os.path.join("uploads/" + category, file.name), file)
-        #UploadedZip.objects.create(category=category, file=file_path)
         
-        full_zip_path = os.path.join(settings.MEDIA_ROOT, file_path)
+        relative_path = f"uploads/{category}/{file.name}"
+        zip_path = default_storage.save(relative_path, file)
+        full_zip_path = os.path.join(settings.MEDIA_ROOT, zip_path)
+
+        #UploadedZip.objects.create(category=category, file=file_path)
         
          # 압축 해제할 폴더명 (zip 파일명 기반)
         extract_folder_name = file.name.replace(".zip", "")
-        extract_folder = os.path.join(settings.MEDIA_ROOT, "uploads/" + category, extract_folder_name)
+        extract_folder = os.path.join(settings.MEDIA_ROOT, "uploads", category, extract_folder_name)
+        os.makedirs(extract_folder, exist_ok=True)
         
         # ZIP 압축 해제
         with zipfile.ZipFile(full_zip_path, 'r') as zip_ref:
@@ -105,12 +104,15 @@ def upload_zip(request):
 
         # 이미지 파일 목록 수집 (jpg/png/jpeg만)
         allowed_ext = [".jpg", ".jpeg", ".png"]
-        preview_files = [
-            f"/media/uploads/{extract_folder_name}/{f}"
-            for f in os.listdir(extract_folder)
-            if os.path.splitext(f)[1].lower() in allowed_ext
-        ]
+        preview_files = []
+        for root, _, files in os.walk(extract_folder):
+            for f in files:
+                if os.path.splitext(f)[1].lower() in allowed_ext:
+                    rel_path = os.path.relpath(os.path.join(root, f), settings.MEDIA_ROOT)
+                    preview_files.append(f"/media/{rel_path.replace('\\\\', '/')}")
 
+        preview_files = preview_files[:30]
+        
         # DB 저장
         #UploadedZip.objects.create(category=category, file=file_path)
 

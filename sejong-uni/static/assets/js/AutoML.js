@@ -20,16 +20,8 @@ async function uploadFile(inputId, category) {
   }
 
   // 이미지 미리보기 영역
-  const previewWrap = document.getElementById(category === "image" ? "image-preview" : "multi-preview");
-  previewWrap.innerHTML = "";
-
-  // 서버에서 반환된 이미지 경로로 UI 생성
-  data.images.forEach(src => {
-    const img = document.createElement("img");
-    img.src = src;
-    img.className = "ml-2 px-3 py-2 bg-blue-600 text-white rounded mt-2";
-    previewWrap.appendChild(img);
-  });
+  const containerId = category === 'image' ? 'image-preview' : 'multi-preview';
+  renderImageGrid(containerId, data.images);
 }
 
 async function loadUploadList(category) {
@@ -42,6 +34,35 @@ async function loadUploadList(category) {
       <span>${f.filename}</span>
       <span class="text-xs text-gray-500">${f.uploaded_at}</span>
     </li>`).join('');
+}
+
+function renderImageGrid(containerId, imageList) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+
+  // 최대 30개까지만 표시
+  const maxCount = 30;
+  const images = imageList.slice(0, maxCount);
+
+  images.forEach(src => {
+    const img = document.createElement('img');
+    img.src = src;
+    img.className =
+      'w-20 h-20 object-cover rounded border hover:scale-110 transition-transform duration-200';
+    container.appendChild(img);
+  });
+
+  // 남은 이미지가 있으면 “+더보기” 표시
+  if (imageList.length > maxCount) {
+    const moreDiv = document.createElement('div');
+    moreDiv.className =
+      'w-20 h-20 flex items-center justify-center bg-gray-200 rounded border text-gray-600 cursor-pointer hover:bg-gray-300';
+    moreDiv.textContent = `+${imageList.length - maxCount}`;
+    moreDiv.onclick = () => {
+      renderImageGrid(containerId, imageList); // 클릭 시 전체 다시 렌더링
+    };
+    container.appendChild(moreDiv);
+  }
 }
 
 // 초기 로드
