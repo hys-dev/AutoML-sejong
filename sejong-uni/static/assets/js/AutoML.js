@@ -211,8 +211,8 @@ function endSearch(kind) {
                 console.log("data: " + JSON.stringify(data));
                 $("#image_pid").val("");
                 $("#image_exp_key").val("");
-                $("#image-search").addClass("hidden");
-                $("#image-stop").removeClass("hidden");
+                $("#image-search").removeClass("hidden");
+                $("#image-stop").addClass("hidden");
             },
             error: function(xhr, errmsg, err) {
                 console.log(errmsg);

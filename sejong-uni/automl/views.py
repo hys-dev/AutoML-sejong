@@ -47,9 +47,10 @@ def start_image_nas(request):
 
     layer_candidates_json = json.dumps(layer_candidates)
 
-    print("subprocess.run")
     image_nas_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../image_nas"))
     nas_py = os.path.join(image_nas_dir, "nas.py")
+
+    print("nas.py: ", os.path.exists(nas_py))
 
     cmd = [
         sys.executable, nas_py,
@@ -67,20 +68,40 @@ def start_image_nas(request):
         str(aux_loss_weight),
     ]
 
-    print(layer_candidates_json)
+    exp_key_container = {"exp_key": None}  # [EXP_KEY]를 저장할 dict
 
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=image_nas_dir,
-                               encoding="utf-8")
+    def run_nas_background(pid, exp_key_container):
+        """
+        NAS 실행 후 종료 시 DB 업데이트
+        """
+        process = processes[pid]
+
+        process.wait()  # NAS 끝날 때까지 대기
+        close_old_connections()
+
+        if exp_key_container["exp_key"]:
+            ImageNas.objects.filter(exp_key=exp_key_container["exp_key"]).update(
+                end_time=timezone.now()
+            )
+
+        processes.pop(pid, None)
+        print(f"NAS process {pid} finished.")
+
+
     try:
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=image_nas_dir,
+                                   bufsize=1, encoding="utf-8", universal_newlines=True)
         pid = process.pid
         processes[pid] = process
-        exp_key = ""
+        exp_key = None
 
-        stdout, stderr = process.communicate()
-
-        for line in stdout.splitlines():
+        for line in process.stdout:
+            print(line, end="")  # 터미널에 실시간 출력
             if line.startswith("[EXP_KEY]"):
                 exp_key = line.replace("[EXP_KEY]", "").strip() or None
+                print("Detected exp_key:", exp_key)
+                exp_key_container["exp_key"] = exp_key
+                break
 
         if exp_key:
             new_image_nas = ImageNas(exp_key=exp_key, dataset_name=dataset_name, layer_candidates=layer_candidates_json,
@@ -91,23 +112,13 @@ def start_image_nas(request):
                                  num_of_cells=num_of_cells, aux_loss_weight=aux_loss_weight)
             new_image_nas.save()
 
-            def monitor():
-                close_old_connections()
-                process.wait()
-                from automl.models import ImageNas
-                from django.utils import timezone
-                ImageNas.objects.filter(exp_key=exp_key).update(
-                    end_time=timezone.now()
-                )
-                processes.pop(pid, None)
+            threading.Thread(target=run_nas_background, args=(pid, exp_key_container), daemon=True).start()
 
-            threading.Thread(target=monitor, daemon=True).start()
-
-        return JsonResponse({
-            "status": "started",
-            "pid": pid,
-            "exp_key": exp_key
-        })
+            return JsonResponse({
+                "status": "started",
+                "pid": pid,
+                "exp_key": exp_key
+            })
 
     except Exception as e:
         print("error", e)
@@ -162,7 +173,7 @@ def end_image_nas(request):
     process = processes.get(pid)
     if process and process.poll() is None:
         process.kill()
-        ImageNas.objects.filter(exp_key=exp_key).update(endTime=timezone.now())
+        ImageNas.objects.filter(exp_key=exp_key).update(end_time=timezone.now())
         processes.pop(pid, None)
         return JsonResponse({"status": "terminated"})
     else:

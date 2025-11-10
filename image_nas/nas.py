@@ -6,18 +6,46 @@ from engine.nas.darts.main2 import nas_search_experiment
 from lib.config import NasSearchStartConfig
 
 def main():
+    print("start image_nas")
+
     dataset_name = sys.argv[1]
     layer_operations = json.loads(sys.argv[2])
-    max_epochs = sys.argv[3]
+    max_epochs = int(sys.argv[3])
     strategy = sys.argv[4]
-    batch_size = sys.argv[5]
-    learning_rate = sys.argv[6]
-    momentum = sys.argv[7]
-    weight_decay = sys.argv[8]
-    auxiliary_loss_weight = sys.argv[9]
-    gradient_clip_val = sys.argv[10]
-    width = sys.argv[11]
-    num_cells = sys.argv[12]
+    batch_size = int(sys.argv[5])
+    learning_rate = float(sys.argv[6])
+    momentum = float(sys.argv[7])
+    weight_decay = float(sys.argv[8])
+    gradient_clip_val = float(sys.argv[9])
+    width = int(sys.argv[10])
+    num_cells = int(sys.argv[11])
+    auxiliary_loss_weight = float(sys.argv[12])
+
+    print(sys.argv)
+
+    """
+    dataset_name = 'cifar10'
+    max_epochs = 10
+    strategy = 'Darts'
+    batch_size = 64
+    learning_rate = 0.025
+    momentum = 0.9
+    weight_decay = 3e-4
+    auxiliary_loss_weight = 0.
+    gradient_clip_val = 5.
+    width = 16
+    num_cells = 8
+
+    layer_operations = [
+        'max_pool_3x3',
+        'avg_pool_3x3',
+        'skip_connect',
+        'sep_conv_3x3',
+        'sep_conv_5x5',
+        'dil_conv_3x3',
+        'dil_conv_5x5',
+    ]
+    """
 
     hyperparameters = {
         'dataset_name': dataset_name, 'max_epochs': max_epochs,

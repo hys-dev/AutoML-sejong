@@ -128,8 +128,8 @@
             </label>
             <label class="block text-sm mb-2">Layer Candidates</label>
             <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
-              <label><input name="layer_candidates" type="checkbox" value="max_pool" checked> MaxPool</label>
-              <label><input name="layer_candidates" type="checkbox" value="avg_pool" checked> AvgPool</label>
+              <label><input name="layer_candidates" type="checkbox" value="max_pool_3x3" checked> MaxPool</label>
+              <label><input name="layer_candidates" type="checkbox" value="avg_pool_3x3" checked> AvgPool</label>
               <label><input name="layer_candidates" type="checkbox" value="skip_connect"> SkipConnect</label>
               <label><input name="layer_candidates" type="checkbox" value="sep_conv_3x3"> SepConv3x3</label>
               <label><input name="layer_candidates" type="checkbox" value="sep_conv_5x5"> SepConv5x5</label>
@@ -138,10 +138,10 @@
             </div>
             <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
               <label class="block text-sm mb-2">Max Epochs
-                <input name="max_epochs" type="number" class="w-full border rounded p-2 mt-1" value="50">
+                <input name="max_epochs" type="number" class="w-full border rounded p-2 mt-1" value="10">
               </label>
               <label class="block text-sm mb-2">Batch Size
-                <input name="batch_size" type="number" class="w-full border rounded p-2 mt-1" value="64">
+                <input name="batch_size" type="number" class="w-full border rounded p-2 mt-1" value="32">
               </label>
               <label class="block text-sm mb-2">Learning Rate
                 <input list="lr-list" name="learning_rate" type="number" class="w-full border rounded p-2 mt-1" value="0" step="0.01">
