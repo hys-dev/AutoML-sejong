@@ -199,7 +199,8 @@ def upload_zip(request):
             for f in files:
                 if os.path.splitext(f)[1].lower() in allowed_ext:
                     rel_path = os.path.relpath(os.path.join(root, f), settings.MEDIA_ROOT)
-                    preview_files.append(f"/media/{rel_path.replace('\\\\', '/')}")
+                    rel_path = rel_path.replace('\\', '/')
+                    preview_files.append(f"/media/{rel_path}")
 
         preview_files = preview_files[:30]
         
