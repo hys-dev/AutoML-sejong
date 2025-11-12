@@ -166,6 +166,7 @@ function startSearch(kind){
                 $("#image_exp_key").val(data.exp_key);
                 $("#image-search").addClass("hidden");
                 $("#image-stop").removeClass("hidden");
+                $("#real-time-log").removeClass("hidden");
             },
             error: function(xhr, errmsg, err) {
                 console.log(errmsg);
@@ -213,6 +214,35 @@ function endSearch(kind) {
                 $("#image_exp_key").val("");
                 $("#image-search").removeClass("hidden");
                 $("#image-stop").addClass("hidden");
+                $("#real-time-log")
+            },
+            error: function(xhr, errmsg, err) {
+                console.log(errmsg);
+            }
+        });
+    }
+    else if (kind=="multi") {
+        let multi_pid = $("#multi_pid").val();
+        let multi_exp_key = $("#multi_exp_key").val();
+        let evo_pid = $("#evo_pid").val();
+        let evo_exp_key = $("#evo_exp_key").val();
+
+        $.ajax({
+            type:'POST',
+            url:'/automl/end-multimodal-nas/',
+            data:{
+                "pid": pid,
+                "exp_key": exp_key,
+                "evo_pid": evo_pid,
+                "evo_exp_key": evo_exp_key
+            },
+            success: function(data) {
+                console.log("ajax success");
+                console.log("data: " + JSON.stringify(data));
+                $("#multi_pid").val("");
+                $("#multi_exp_key").val("");
+                $("#multi-search").addClass("hidden");
+                $("#multi-stop").removeClass("hidden");
             },
             error: function(xhr, errmsg, err) {
                 console.log(errmsg);

@@ -1,5 +1,7 @@
 import os
 import argparse
+import sys
+
 import torch
 from lib import utils
 from engine.supernet_train import get_args_parser, nas_search_experiment
@@ -12,7 +14,7 @@ def main():
     parser = argparse.ArgumentParser('AutoFormer training and evaluation script', parents=[get_args_parser()])
     args = parser.parse_args()
     utils.init_distributed_mode(args)
-
+    """
     dataset_name = "MMIMDB"
     max_epochs = 500
     learning_rate = 3e-5
@@ -22,6 +24,17 @@ def main():
     weight_decay = 0.05
     optimizer = "adamw"
     lr_scheduler = "cosine"
+    """
+    dataset_name = sys.argv[1]
+    max_epochs = int(sys.argv[2])
+    learning_rate = float(sys.argv[3])
+    min_learning_rate = float(sys.argv[4])
+    warmup_epochs = int(sys.argv[5])
+    batch_size = int(sys.argv[6])
+    weight_decay = float(sys.argv[7])
+    optimizer = sys.argv[8]
+    lr_scheduler = sys.argv[9]
+    print(sys.argv)
 
     hyperparameters = {
         "dataset_name": dataset_name,
@@ -46,6 +59,7 @@ def main():
     exp_key = obj_to_broadcast[0]
     config.set_exp_key(exp_key)
     print(exp_key)
+    print(f"[EXP_KEY]{exp_key}")
 
     for key in config.keys():
         setattr(args, key, config[key])
@@ -55,6 +69,7 @@ def main():
     setattr(args, 'resume', './checkpoint/supernet-tiny.pth')
 
     nas_search_exp_key = nas_search_experiment(args)
+    print(f"[NAS_SEARCH_EXP_KEY]{nas_search_exp_key}")
 
 
 if __name__ == '__main__':

@@ -13,7 +13,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 
-from automl.models import UploadedZip, ImageNas
+from automl.models import UploadedZip, ImageNas, MultimodalNas
 from config import settings
 
 # Create your views here.
@@ -130,40 +130,91 @@ def start_image_nas(request):
 @csrf_exempt
 def start_multimodal_nas(request):
     print("views.py start_multimodal_nas")
+
+    user_id = "0"
+    if request.user.is_authenticated:
+        user_id = request.user.username
+
     dataset_name = request.POST.get("dataset_name")
     max_epochs = request.POST.get('max_epochs')
-    batch_size = request.POST.get('batch_size')
     learning_rate = request.POST.get('learning_rate')
     min_learning_rate = request.POST.get('min_learning_rate')
     warmup_epochs = request.POST.get('warmup_epochs')
+    batch_size = request.POST.get('batch_size')
     weight_decay = request.POST.get('weight_decay')
     optimizer = request.POST.get('optimizer')
     lr_scheduler = request.POST.get('lr_scheduler')
 
     multimodal_nas_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../multimodal_nas"))
-    nas_py = os.path.join(multimodal_nas_dir, "nas.py")
+    multimodal_nas_py = os.path.join(multimodal_nas_dir, "nas.py")
 
     cmd = [
-        sys.executable, nas_py,
+        sys.executable, multimodal_nas_py,
         str(dataset_name),
         str(max_epochs),
-        str(batch_size),
         str(learning_rate),
         str(min_learning_rate),
         str(warmup_epochs),
+        str(batch_size),
         str(weight_decay),
         str(optimizer),
         str(lr_scheduler),
     ]
 
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=multimodal_nas_dir,
-                               encoding="utf-8")
-    exp_key = ""
+    exp_key_container = {"exp_key": None}  # [EXP_KEY]를 저장할 dict
 
-    for line in process.stdout:
-        line = line.strip()
-        if line.startswith("[EXP_KEY]"):
-            exp_key = line.replace("[EXP_KEY]", "").strip()
+    def run_nas_background(pid, exp_key_container):
+        """
+        NAS 실행 후 종료 시 DB 업데이트
+        """
+        process = processes[pid]
+
+        process.wait()  # NAS 끝날 때까지 대기
+        close_old_connections()
+
+        if exp_key_container["exp_key"]:
+            MultimodalNas.objects.filter(exp_key=exp_key_container["exp_key"]).update(
+                end_time=timezone.now()
+            )
+
+        processes.pop(pid, None)
+        print(f"NAS process {pid} finished.")
+
+    try:
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=multimodal_nas_dir,
+                                   bufsize=1, encoding="utf-8", universal_newlines=True)
+        pid = process.pid
+        processes[pid] = process
+        exp_key = None
+
+        for line in process.stdout:
+            print(line, end="")  # 터미널에 실시간 출력
+            if line.startswith("[EXP_KEY]"):
+                exp_key = line.replace("[EXP_KEY]", "").strip() or None
+                print("Detected exp_key:", exp_key)
+                exp_key_container["exp_key"] = exp_key
+                break
+
+        if exp_key:
+            new_multimodal_nas = MultimodalNas(exp_key=exp_key, dataset_name=dataset_name,max_epochs=max_epochs, user_id=user_id,
+                                          batch_size=batch_size, learning_rate=learning_rate, min_learning_rate=min_learning_rate,
+                                          weight_decay=weight_decay, optimizer=optimizer, lr_scheduler=lr_scheduler)
+            new_multimodal_nas.save()
+
+            threading.Thread(target=run_nas_background, args=(pid, exp_key_container), daemon=True).start()
+
+            return JsonResponse({
+                "status": "started",
+                "pid": pid,
+                "exp_key": exp_key
+            })
+
+    except Exception as e:
+        print("error", e)
+        return JsonResponse({
+            "status": "error",
+            "message": str(e),
+        })
 
 @csrf_exempt
 def end_image_nas(request):
@@ -180,7 +231,14 @@ def end_image_nas(request):
         return JsonResponse({"status": "not_running"})
 
 def AutoML_view(request):
-    return render(request, 'detail/AutoML.html')
+    #추후 로그인한 사용자만 접근 가능하도록 수정
+    user_id = "0"
+    if request.user.is_authenticated:
+        user_id = request.user.username
+
+    obj_image = ImageNas.objects.filter(user_id=user_id)
+    obj_multi = MultimodalNas.objects.filter(user_id=user_id)
+    return render(request, 'detail/AutoML.html', {'imageNas': obj_image, 'multimodalNas': obj_multi})
 
 @csrf_exempt
 def upload_zip(request):
