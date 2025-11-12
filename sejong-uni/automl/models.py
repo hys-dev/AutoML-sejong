@@ -33,6 +33,7 @@ class ImageNas(models.Model):
     num_of_cells = models.IntegerField()
     aux_loss_weight = models.FloatField()
     drop_path_prob = models.CharField(null=True)
+    performance = models.FloatField(null=True)
     use_yn = models.CharField(max_length=1, default="y")
 
 class MultimodalNas(models.Model):
@@ -49,12 +50,14 @@ class MultimodalNas(models.Model):
     weight_decay = models.FloatField()
     optimizer = models.CharField(max_length=100)
     lr_scheduler = models.CharField(max_length=100)
+    performance = models.FloatField(null=True)
     use_yn = models.CharField(max_length=1)
 
 class MultimodalEvo(models.Model):
     evo_id = models.AutoField(primary_key=True)
     exp_key = models.CharField()
     multimodal_nas_id = models.CharField()
+    multi_exp_key = models.CharField(default="", max_length=100)
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField()
     max_epochs = models.IntegerField()
@@ -64,3 +67,5 @@ class MultimodalEvo(models.Model):
     select_num = models.IntegerField()
     crossover_num = models.IntegerField()
     mutation_num = models.IntegerField()
+    performance = models.FloatField(null=True)
+    use_yn = models.CharField(max_length=1)
