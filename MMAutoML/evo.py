@@ -1,5 +1,7 @@
 import os
 import argparse
+import sys
+
 import torch
 
 from lib import utils
@@ -15,17 +17,17 @@ def main():
     args = parser.parse_args()
     utils.init_distributed_mode(args)
 
-    nas_search_exp_key = "251016113220rNPZ"
-    dataset_name = "MMIMDB"
+    nas_search_exp_key = sys.argv[1]
+    dataset_name = sys.argv[2]
 
-    max_epochs = 20
-    batch_size = 96
-    min_param_limits = 10
-    param_limits = 20
-    select_num = 10
-    population_num = 50
-    crossover_num = 25
-    mutation_num = 25
+    max_epochs = int(sys.argv[3])
+    batch_size = int(sys.argv[4])
+    min_param_limits = int(sys.argv[5])
+    param_limits = int(sys.argv[6])
+    select_num = int(sys.argv[7])
+    population_num = int(sys.argv[8])
+    crossover_num = int(sys.argv[9])
+    mutation_num = int(sys.argv[10])
 
     hyperparameters = {
         'dataset_name': dataset_name,

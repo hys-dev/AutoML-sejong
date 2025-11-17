@@ -31,6 +31,7 @@
   <!-- [Template CSS Files] -->
   <link rel="stylesheet" href="{% static 'assets/css/style.css'%}" id="main-style-link">
   <link rel="stylesheet" href="{% static 'assets/css/style-preset.css'%}">
+  <link rel="stylesheet" type="text/css" href="{% static 'assets/css/base.css' %}">
 
   <style>
     .panel { background: white; border-radius: 0.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
@@ -138,7 +139,8 @@
             </div>
             <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
               <label class="block text-sm mb-2">Max Epochs
-                <input list="max-list" name="max_epochs" type="number" class="w-full border rounded p-2 mt-1" value="10">
+                <input list="max-list" name="max_epochs" type="number" class="w-full border rounded p-2 mt-1"
+                       value="10">
                 <datalist id="max-list">
                   <option value="10"></option>
                   <option value="20"></option>
@@ -148,7 +150,8 @@
                 </datalist>
               </label>
               <label class="block text-sm mb-2">Batch Size
-                <input list="batch-list" name="batch_size" type="number" class="w-full border rounded p-2 mt-1" value="8">
+                <input list="batch-list" name="batch_size" type="number" class="w-full border rounded p-2 mt-1"
+                       value="8">
                 <datalist id="batch-list">
                   <option value="8"></option>
                   <option value="16"></option>
@@ -158,7 +161,8 @@
                 </datalist>
               </label>
               <label class="block text-sm mb-2">Learning Rate
-                <input list="lr-list" name="learning_rate" type="number" class="w-full border rounded p-2 mt-1" value="0.1" step="0.1">
+                <input list="lr-list" name="learning_rate" type="number" class="w-full border rounded p-2 mt-1"
+                       value="0.1" step="0.1">
                 <datalist id="lr-list">
                   <option value="0.0005"></option>
                   <option value="0.001"></option>
@@ -169,7 +173,8 @@
                 </datalist>
               </label>
               <label class="block text-sm mb-2">Momentum
-                <input list="momentum-list" name="momentum" type="number" class="w-full border rounded p-2 mt-1" value="0.8" step="0.1">
+                <input list="momentum-list" name="momentum" type="number" class="w-full border rounded p-2 mt-1"
+                       value="0.8" step="0.1">
                 <datalist id="momentum-list">
                   <option value="0.8"></option>
                   <option value="0.89"></option>
@@ -179,7 +184,8 @@
                 </datalist>
               </label>
               <label class="block text-sm mb-2">Weight Decay
-                <input list="weight-list" name="weight_decay" type="number" class="w-full border rounded p-2 mt-1" value="0.05">
+                <input list="weight-list" name="weight_decay" type="number" class="w-full border rounded p-2 mt-1"
+                       value="0.05">
                 <datalist id="weight-list">
                   <option value="0.05"></option>
                   <option value="0.1"></option>
@@ -188,7 +194,8 @@
                 </datalist>
               </label>
               <label class="block text-sm mb-2">Gradient Clip
-                <input list="gradient-list" name="gradient_clip" type="number" class="w-full border rounded p-2 mt-1" value="1">
+                <input list="gradient-list" name="gradient_clip" type="number" class="w-full border rounded p-2 mt-1"
+                       value="1">
                 <datalist id="gradient-list">
                   <option value="1"></option>
                   <option value="2"></option>
@@ -208,7 +215,8 @@
                 </datalist>
               </label>
               <label class="block text-sm mb-2">Number of Cells
-                <input list="num-list" name="num_of_cells" type="number" class="w-full border rounded p-2 mt-1" value="32">
+                <input list="num-list" name="num_of_cells" type="number" class="w-full border rounded p-2 mt-1"
+                       value="32">
                 <datalist id="num-list">
                   <option value="2"></option>
                   <option value="4"></option>
@@ -218,7 +226,8 @@
                 </datalist>
               </label>
               <label class="block text-sm mb-2">Auxiliary Loss Weight
-                <input list="aux-list" name="aux_loss_weight" type="number" class="w-full border rounded p-2 mt-1" value="0">
+                <input list="aux-list" name="aux_loss_weight" type="number" class="w-full border rounded p-2 mt-1"
+                       value="0">
                 <datalist id="aux-list">
                   <option value="0"></option>
                   <option value="0.1"></option>
@@ -229,8 +238,12 @@
               </label>
             </div>
             <div class="flex space-x-2 mt-3">
-              <button class="px-3 py-2 bg-green-600 text-white rounded" id="image-search" onclick="startSearch('image')">Search</button>
-              <button class="px-3 py-2 bg-red-500 text-white rounded hidden" id="image-stop" onclick="endSearch('image')">Stop</button>
+              <button class="px-3 py-2 bg-green-600 text-white rounded" id="image-search"
+                      onclick="startSearch('image')">Search
+              </button>
+              <button class="px-3 py-2 bg-red-500 text-white rounded hidden" id="image-stop"
+                      onclick="endSearch('image')">Stop
+              </button>
             </div>
             <input type="hidden" id="image_pid">
             <input type="hidden" id="image_exp_key">
@@ -275,13 +288,13 @@
           </div>
 
           <!-- 과거 로그 재사용 구역 -->
-          <div class="col-md-12 col-xl-8">
-          <h5 class="mb-3"></h5>
-          <div class="card tbl-card">
-            <div class="card-body">
-              <div class="table-responsive">
-                <table class="table table-hover table-borderless mb-0">
-                  <thead>
+          <div class="panel p-4 mb-6">
+            <h5 class="mb-3">과거 탐색 기록 확인</h5>
+            <div class="card tbl-card">
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover table-borderless mb-0">
+                    <thead>
                     <tr>
                       <th>순번</th>
                       <th>데이터셋</th>
@@ -292,27 +305,52 @@
                       <th>상세보기</th>
                       <th class="text-end">기록 삭제</th>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {% for image in imageNas %}
+                    </thead>
+                    <tbody>
+                    {% for image in page_obj_image %}
                     <tr>
-                      <td><a href="#" class="text-muted">순번</a></td>
+                      <td>{{ page_obj_image.start_index|add:forloop.counter0 }}</td>
                       <td>{{ image.dataset_name }}</td>
                       <td>{{ image.strategy }}</td>
                       <td>{{ image.start_time }}</td>
                       <td>{{ image.end_time }}</td>
                       <td>{{ image.performance }}</td>
-                      <td><input type="button" value="보기"></td>
-                      <td class="text-end"><input type="button" value="삭제"></td>
+                      <td style="text-align:center"><input type="button" value="보기"></td>
+                      <td class="text-center"><input type="button" value="삭제"></td>
                     </tr>
-                  {% empty %}
-                  {% endfor %}
-                  </tbody>
-                </table>
+                    {% empty %}
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                  <div class="pagination" id="pagination-image">
+                    {% if page_obj_image.has_previous %}
+                    <a class="first" href="?image_page=1&multi_page={{ page_obj_multi.number }}">처음</a>
+                    <a class="previous"
+                       href="?image_page={{ page_obj_image.previous_page_number }}&multi_page={{ page_obj_multi.number }}">이전</a>
+                    {% endif %}
+
+                    <div class="page-numbers">
+                    {% for num in page_obj_image.paginator.page_range %}
+                      {% if num >= page_obj_image.number|add:-2 and num <= page_obj_image.number|add:2 %}
+                        {% if num == page_obj_image.number %}
+                          <span class="current">{{ num }}</span>
+                        {% else %}
+                          <a href="?image_page={{ num }}&multi_page={{ page_obj_multi.number }}">{{ num }}</a>
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                    </div>
+                    {% if page_obj_image.has_next %}
+                    <a class="next"
+                       href="?image_page={{ page_obj_image.next_page_number }}&multi_page={{ page_obj_multi.number }}">다음</a>
+                    <a class="last"
+                       href="?image_page={{ page_obj_image.paginator.num_pages }}&multi_page={{ page_obj_multi.number }}">마지막</a>
+                    {% endif %}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
         </section>
 
@@ -340,7 +378,8 @@
             <h3 class="font-semibold mb-2">SuperNet Train Hyperparameter</h3>
             <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
               <label class="block text-sm mb-2">Max Epochs
-                <input list="multi-max-list" type="number" name="multi_max_epochs" class="w-full border rounded p-2 mt-1" value="50">
+                <input list="multi-max-list" type="number" name="multi_max_epochs"
+                       class="w-full border rounded p-2 mt-1" value="50">
                 <datalist id="multi-max-list">
                   <option value="10"></option>
                   <option value="50"></option>
@@ -350,7 +389,8 @@
                 </datalist>
               </label>
               <label class="block text-sm mb-2">Batch Size
-                <input list="multi-batch-list" type="number" name="multi_batch_size" class="w-full border rounded p-2 mt-1" value="50">
+                <input list="multi-batch-list" type="number" name="multi_batch_size"
+                       class="w-full border rounded p-2 mt-1" value="50">
                 <datalist id="multi-batch-list">
                   <option value="4"></option>
                   <option value="8"></option>
@@ -360,7 +400,8 @@
                 </datalist>
               </label>
               <label class="block text-sm mb-2">Learning Rate
-                <input list="multi-lr-list" type="number" name="multi_learning_rate" class="w-full border rounded p-2 mt-1" value="50">
+                <input list="multi-lr-list" type="number" name="multi_learning_rate"
+                       class="w-full border rounded p-2 mt-1" value="50">
                 <datalist id="multi-lr-list">
                   <option value="0.0005"></option>
                   <option value="0.001"></option>
@@ -371,7 +412,8 @@
                 </datalist>
               </label>
               <label class="block text-sm mb-2">Min Learning Rate
-                <input list="multi-min-lr-list" type="number" name="multi_min_learning_rate" class="w-full border rounded p-2 mt-1" value="50">
+                <input list="multi-min-lr-list" type="number" name="multi_min_learning_rate"
+                       class="w-full border rounded p-2 mt-1" value="50">
                 <datalist id="multi-min-lr-list">
                   <option value="0.0005"></option>
                   <option value="0.001"></option>
@@ -382,7 +424,8 @@
                 </datalist>
               </label>
               <label class="block text-sm mb-2">Warmup Epochs
-                <input list="multi-warmup-list" type="number" name="multi_warmup_epochs" class="w-full border rounded p-2 mt-1" value="50">
+                <input list="multi-warmup-list" type="number" name="multi_warmup_epochs"
+                       class="w-full border rounded p-2 mt-1" value="50">
                 <datalist id="multi-warmup-list">
                   <option value="1"></option>
                   <option value="2"></option>
@@ -392,7 +435,8 @@
                 </datalist>
               </label>
               <label class="block text-sm mb-2">Weight Decay
-                <input list="multi-weight-list" type="number" name="multi_weight_decay" class="w-full border rounded p-2 mt-1" value="50">
+                <input list="multi-weight-list" type="number" name="multi_weight_decay"
+                       class="w-full border rounded p-2 mt-1" value="50">
                 <datalist id="multi-weight-list">
                   <option value="0.05"></option>
                   <option value="0.1"></option>
@@ -421,7 +465,8 @@
             <h3 class="font-semibold mb-2">Evolution Hyperparameter</h3>
             <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
               <label class="block text-sm mb-2">Max Epochs
-                <input list="evo-max-list" type="number" step="0.1" name="evo_max_epochs" class="w-full border rounded p-2 mt-1" value="50">
+                <input list="evo-max-list" type="number" step="0.1" name="evo_max_epochs"
+                       class="w-full border rounded p-2 mt-1" value="50">
                 <datalist id="evo-max-list">
                   <option value="1"></option>
                   <option value="2"></option>
@@ -456,8 +501,12 @@
                 <input type="number" name="evo_mutation_num" class="w-full border rounded p-2 mt-1" value="1">
               </label>
             </div>
-            <button class="mt-3 px-3 py-2 bg-green-600 text-white rounded" id="multi-search" onclick="startSearch('multi')">Search</button>
-            <button class="px-3 py-2 bg-red-500 text-white rounded hidden" id="multi-stop" onclick="endSearch('multi')">Stop</button>
+            <button class="mt-3 px-3 py-2 bg-green-600 text-white rounded" id="multi-search"
+                    onclick="startSearch('multi')">Search
+            </button>
+            <button class="px-3 py-2 bg-red-500 text-white rounded hidden" id="multi-stop" onclick="endSearch('multi')">
+              Stop
+            </button>
             </button>
 
             <input type="hidden" id="multi_pid">
@@ -475,13 +524,13 @@
           </div>
 
           <!-- 과거 로그 재사용 구역 -->
-          <div class="col-md-12 col-xl-8">
-          <h5 class="mb-3"></h5>
-          <div class="card tbl-card">
-            <div class="card-body">
-              <div class="table-responsive">
-                <table class="table table-hover table-borderless mb-0">
-                  <thead>
+          <div class="panel p-4 mb-6">
+            <h5 class="mb-3">과거 탐색 기록 확인</h5>
+            <div class="card tbl-card">
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover table-borderless mb-0">
+                    <thead>
                     <tr>
                       <th>순번</th>
                       <th>데이터셋</th>
@@ -492,24 +541,53 @@
                       <th>상세보기</th>
                       <th class="text-end">기록 삭제</th>
                     </tr>
-                  </thead>
-                  <tbody>
+                    </thead>
+                    <tbody>
+                    {% for multi in page_obj_multi %}
                     <tr>
-
-                      <td><a href="#" class="text-muted">84564564</a></td>
-                      <td>Camera Lens</td>
-                      <td>40</td>
-                      <td><span class="d-flex align-items-center gap-2"><i
-                            class="fas fa-circle text-danger f-10 m-r-5"></i>Rejected</span>
-                      </td>
-                      <td class="text-end">$40,570</td>
+                      <td>{{ page_obj_multi.start_index|add:forloop.counter0 }}</td>
+                      <td>{{ multi.dataset_name }}</td>
+                      <td>{{ multi.</td>
+                      <td>{{ multi.start_time }}</td>
+                      <td>{{ multi.end_time }}</td>
+                      <td>{{ multi.performance }}</td>
+                      <td><input type="button" value="보기"></td>
+                      <td class="text-end"></td>
                     </tr>
-                  </tbody>
-                </table>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                  <div class="pagination">
+
+                    {% if page_obj_multi.has_previous %}
+                    <a class="first" href="?multi_page=1&image_page={{ page_obj_image.number }}">처음</a>
+                    <a class="previous"
+                       href="?multi_page={{ page_obj_multi.previous_page_number }}&image_page={{ page_obj_image.number }}">이전</a>
+                    {% endif %}
+
+                    <div class="page-numbers">
+                    {% for num in page_obj_multi.paginator.page_range %}
+                      {% if num >= page_obj_multi.number|add:-2 and num <= page_obj_multi.number|add:2 %}
+                        {% if num == page_obj_multi.number %}
+                          <span class="current">{{ num }}</span>
+                        {% else %}
+                          <a href="?multi_page={{ num }}&image_page={{ page_obj_image.number }}">{{ num }}</a>
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                    </div>
+                    {% if page_obj_multi.has_next %}
+                    <a class="next"
+                       href="?multi_page={{ page_obj_multi.next_page_number }}&image_page={{ page_obj_image.number }}">다음</a>
+                    <a class="last"
+                       href="?multi_page={{ page_obj_multi.paginator.num_pages }}&image_page={{ page_obj_image.number }}">마지막</a>
+                    {% endif %}
+
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         </section>
       </main>
     </div>

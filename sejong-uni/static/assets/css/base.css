@@ -1,0 +1,40 @@
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    font-family: Arial, sans-serif;
+}
+
+/* 숫자 묶음 */
+.page-numbers {
+    display: flex;
+    gap: 8px;
+}
+
+/* 기본 버튼 */
+.pagination a,
+.pagination .current {
+    padding: 8px 12px;
+}
+
+.pagination a {
+    color: #333;
+    text-decoration: none;
+}
+
+.pagination .current {
+    color: #000;
+}
+
+/* 양쪽 버튼 고정 */
+.nav.first,
+.nav.previous {
+    margin-right: auto;
+}
+
+.nav.next,
+.nav.last {
+    margin-left: auto;
+}

@@ -192,6 +192,41 @@ function startSearch(kind){
         let evo_population_num = document.querySelector('input[name="evo_population_num"]').value;
         let evo_crossover_num = document.querySelector('input[name="evo_crossover_num"]').value;
         let evo_mutation_num = document.querySelector('input[name="evo_mutation_num"]').value;
+
+        $.ajax({
+            type:'POST',
+            url:'/automl/start-multimodal-nas/',
+            data:{
+                "dataset_name": dataset_name,
+                "max_epochs": max_epochs,
+                "batch_size": batch_size,
+                "min_learning_rate": min_learning_rate,
+                "warmup_epochs": warmup_epochs,
+                "weight_decay": weight_decay,
+                "multi_optimizer": multi_optimizer,
+                "multi_lr_scheduler": multi_lr_scheduler,
+
+                "evo_max_epochs": evo_max_epochs,
+                "evo_batch_size": evo_batch_size,
+                "evo_min_param_limits": evo_min_param_limits,
+                "evo_param_limits": evo_param_limits,
+                "evo_population_num": evo_population_num,
+                "evo_select_num": evo_select_num,
+                "evo_crossover_num": evo_crossover_num,
+                "evo_mutation_num": evo_mutation_num,
+            },
+            success: function(data) {
+                console.log("ajax success");
+                console.log("data: " + JSON.stringify(data));
+                $("#multi_pid").val(data.pid);
+                $("#multi_exp_key").val(data.exp_key);
+                $("#multi-search").addClass("hidden");
+                $("#multi-stop").removeClass("hidden");
+            },
+            error: function(xhr, errmsg, err) {
+                console.log(errmsg);
+            }
+        })
     }
 
 }
