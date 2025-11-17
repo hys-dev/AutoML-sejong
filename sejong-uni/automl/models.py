@@ -42,6 +42,7 @@ class MultimodalNas(models.Model):
     exp_key = models.CharField()  # 각 실험을 특정하는 랜덤 문자열
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField()
+    dataset_name = models.CharField
     max_epochs = models.IntegerField()
     batch_size = models.IntegerField()
     learning_rate = models.FloatField()
@@ -57,15 +58,19 @@ class MultimodalEvo(models.Model):
     evo_id = models.AutoField(primary_key=True)
     exp_key = models.CharField()
     multimodal_nas_id = models.CharField()
-    multi_exp_key = models.CharField(default="", max_length=100)
+    nas_exp_key = models.CharField()
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField()
+    dataset_name = models.CharField()
     max_epochs = models.IntegerField()
     batch_size = models.IntegerField()
     min_param_limits = models.IntegerField()
     param_limits = models.IntegerField()
+    population_num = models.IntegerField()
     select_num = models.IntegerField()
     crossover_num = models.IntegerField()
     mutation_num = models.IntegerField()
     performance = models.FloatField(null=True)
     use_yn = models.CharField(max_length=1)
+
+    
