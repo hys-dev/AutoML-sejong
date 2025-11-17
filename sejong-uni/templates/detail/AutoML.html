@@ -237,10 +237,40 @@
           </div>
 
           <!-- 실시간 로그/결과 구역 -->
-          <div id="image-real-time-log" class="panel p-4 hidden">
-            <h3 class="font-semibold mb-2">실시간 로그 / 결과</h3>
+          <div id="image-real-time-log" class="panel p-4">
+            <h3 class="font-semibold mb-2">모델 탐색 과정 실시간 시각화</h3>
             <div class="chart">
               <canvas id="chart-line" class="chart-canvas" height="170"></canvas>
+            </div>
+
+            <!-- ✅ Epoch 결과 테이블 -->
+            <div class="mt-6">
+              <h4 class="font-semibold mb-2 text-base">Epoch Results</h4>
+              <table class="min-w-full bg-white border">
+                <thead class="bg-gray-100 text-sm">
+                  <tr>
+                    <th class="p-2 border">상세</th>
+                    <th class="p-2 border">Epoch</th>
+                    <th class="p-2 border">Name</th>
+                    <th class="p-2 border">Average Accuracy</th>
+                    <th class="p-2 border">Average Loss</th>
+                    <th class="p-2 border">Retrain</th>
+                    <th class="p-2 border">Hyperparameter</th>
+                  </tr>
+                </thead>
+                <tbody id="epoch-table-body" class="text-sm">
+                  <!-- JS로 데이터 추가 -->
+                  <td class="border text-center">
+                    <button onclick="toggleDetail(${epochData.id})" id="toggle-btn-${epochData.id}" class="text-lg font-bold text-blue-600">+</button>
+                  </td>
+                  <td class="border text-center">${epochData.epoch}</td>
+                  <td class="border text-center">${epochData.name}</td>
+                  <td class="border text-center">${epochData.acc}%</td>
+                  <td class="border text-center">${epochData.loss}</td>
+                  <td class="border text-center"><button class="px-2 py-1 bg-blue-500 text-white text-xs rounded">retrain</button></td>
+                  <td class="border text-center"><button class="px-2 py-1 bg-purple-500 text-white text-xs rounded">hyper</button></td>
+                </tbody>
+              </table>
             </div>
           </div>
 
@@ -437,8 +467,8 @@
           </div>
 
           <!-- 실시간 로그/결과 구역 -->
-          <div id="multi-real-time-log" class="panel p-4 hidden">
-            <h3 class="font-semibold mb-2">실시간 로그 / 결과</h3>
+          <div id="multi-real-time-log" class="panel p-4">
+            <h3 class="font-semibold mb-2">모델 탐색 과정 실시간 시각화</h3>
             <div class="chart">
               <canvas id="chart-line" class="chart-canvas" height="170"></canvas>
             </div>
@@ -506,7 +536,7 @@
 <script src="{% static 'assets/js/plugins/popper.min.js'%}"></script>
 <script src="{% static 'assets/js/plugins/simplebar.min.js'%}"></script>
 <script src="{% static 'assets/js/plugins/bootstrap.min.js'%}"></script>
-<script src="{% static 'assets/js/plugins/chartjs.min.js'%}"></script>
+<script src="{% static 'assets/js/plugins/chart.umd.min.js'%}"></script>
 <script src="{% static 'assets/js/fonts/custom-font.js'%}"></script>
 <script src="{% static 'assets/js/pcoded.js'%}"></script>
 <script src="{% static 'assets/js/plugins/feather.min.js'%}"></script>
