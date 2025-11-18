@@ -73,4 +73,13 @@ class MultimodalEvo(models.Model):
     performance = models.FloatField(null=True)
     use_yn = models.CharField(max_length=1)
 
-    
+class ImageRetrain(models.Model):
+    image_retrain_id = models.AutoField(primary_key=True)
+    user_id = models.IntegerField()
+    exp_key = models.CharField()
+    image_nas_id = models.IntegerField()
+    nas_exp_key = models.IntegerField()
+    start_time = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField()
+    dataset_name = models.CharField()
+    epoch_num = models.IntegerField()

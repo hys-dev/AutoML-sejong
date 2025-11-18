@@ -250,7 +250,7 @@
           </div>
 
           <!-- 실시간 로그/결과 구역 -->
-          <div id="image-real-time-log" class="panel p-4">
+          <div id="image-real-time-log" class="panel p-4 mb-6">
             <h3 class="font-semibold mb-2">모델 탐색 과정 실시간 시각화</h3>
             <div class="chart">
               <canvas id="chart-line" class="chart-canvas" height="170"></canvas>
@@ -289,11 +289,11 @@
 
           <!-- 과거 로그 재사용 구역 -->
           <div class="panel p-4 mb-6">
-            <h5 class="mb-3">과거 탐색 기록 확인</h5>
+            <h5 class="font-semibold mb-2">과거 탐색 기록 확인</h5>
             <div class="card tbl-card">
               <div class="card-body">
                 <div class="table-responsive">
-                  <table class="table table-hover table-borderless mb-0">
+                  <table class="table table-hover mb-0">
                     <thead>
                     <tr>
                       <th>순번</th>
@@ -308,15 +308,15 @@
                     </thead>
                     <tbody>
                     {% for image in page_obj_image %}
-                    <tr>
+                    <tr data-id="{{ image.image_nas_id }}">
                       <td>{{ page_obj_image.start_index|add:forloop.counter0 }}</td>
                       <td>{{ image.dataset_name }}</td>
                       <td>{{ image.strategy }}</td>
                       <td>{{ image.start_time }}</td>
                       <td>{{ image.end_time }}</td>
                       <td>{{ image.performance }}</td>
-                      <td style="text-align:center"><input type="button" value="보기"></td>
-                      <td class="text-center"><input type="button" value="삭제"></td>
+                      <td style="text-align:center"><button class="px-2 py-1 bg-blue-500 text-white text-s rounded" onclick="">보기</button></td>
+                      <td class="text-center"><button class="px-2 py-1 bg-red-500 text-white text-s rounded" onclick="deleteSearch('image')">삭제</button></td>
                     </tr>
                     {% empty %}
                     {% endfor %}

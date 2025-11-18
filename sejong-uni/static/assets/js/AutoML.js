@@ -286,6 +286,27 @@ function endSearch(kind) {
     }
 }
 
+function deleteSearch(kind) {
+    if (kind=="image") {
+        $.ajax({
+            type:'POST',
+            url:'/automl/delete-search/',
+            data:{
+
+            },
+            success: function(data) {
+
+            },
+            error: function(xhr, errmsg, err) {
+                console.log(errmsg);
+            }
+        });
+    }
+
+    else if (kind=="multi") {
+
+    }
+}
 
 // 초기 탭
 showTab('image');
