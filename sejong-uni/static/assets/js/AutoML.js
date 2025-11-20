@@ -14,6 +14,8 @@ async function uploadFile(inputId, category) {
 
   if (data.success) {
     alert(`[${category}] 업로드 성공: ${data.filename}`);
+    const res = await fetch('/automl/api/upload-upload_zip_delete/?category=${category}&category=${data.filename}');
+    console.log(res);
     //loadUploadList(category);
   } else {
     alert('업로드 실패');

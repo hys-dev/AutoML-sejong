@@ -8,11 +8,11 @@ class UploadedZip(models.Model):
         ('multi', 'Multi-modal NAS'),
     ]
     category = models.CharField(max_length=10, choices=CATEGORY_CHOICES)
-    file = models.FileField(upload_to='uploads/')
+    file = models.FileField(upload_to='midea/uploads/{self.categorey}')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.category}: {self.file.name}"
+        return f"{self.category}: {self.file_name}"
 
 class ImageNas(models.Model):
     image_nas_id = models.AutoField(primary_key=True)

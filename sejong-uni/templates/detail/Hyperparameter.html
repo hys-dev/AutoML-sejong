@@ -66,7 +66,7 @@
           <label>Other</label>
           <i class="ti ti-brand-chrome"></i>
         </li>
-        <li class="pc-item">
+        <li class="pc-item-1">
           <a href="{% url 'automl:AutoML'%}" class="pc-link">
             <span class="pc-micon"><i class="ti ti-brand-chrome"></i></span>
             <span class="pc-mtext">모델 구조 탐색</span>
@@ -78,7 +78,7 @@
             <span class="pc-mtext">성능 검증</span>
           </a>
         </li>
-        <li class="pc-item-3">
+        <li class="pc-item">
           <a href="{% url 'automl:Hyperparameter'%}" class="pc-link">
             <span class="pc-micon"><i class="ti ti-brand-chrome"></i></span>
             <span class="pc-mtext">하이퍼파라미터 탐색</span>
@@ -103,7 +103,7 @@
     <!-- [ Main Content ] start -->
     <div class="min-h-screen p-6">
       <header class="mb-6 max-w-7xl mx-auto">
-        <h1 class="text-2xl font-semibold mb-4">■ AutoML NAS 탐색</h1>
+        <h1 class="text-2xl font-semibold mb-4">■ 하이퍼파라미터 탐색</h1>
         <div class="flex space-x-2 border-b">
           <button id="tab-image" class="px-4 py-2 tab-active" onclick="showTab('image')">Image NAS</button>
           <button id="tab-multi" class="px-4 py-2 tab-inactive" onclick="showTab('multi')">Multi-modal NAS</button>
@@ -113,22 +113,7 @@
       <main class="max-w-7xl mx-auto space-y-8">
         <!-- Image NAS -->
         <section id="panel-image" class="panel p-6">
-          <h2 class="text-xl font-medium mb-6">Image NAS 모델 탐색</h2>
-
-          <!-- 데이터 업로드 구역 -->
-          <div class="panel p-4 mb-6">
-            <h3 class="font-semibold mb-2">데이터 업로드</h3>
-            <div class="border-dashed border-2 rounded p-4 text-center bg-gray-50">
-              <p>ZIP 파일 업로드</p>
-              <input id="image-zip" type="file" accept=".zip" class="mt-3"/>
-              <button onclick="uploadFile('image-zip','image')" class="ml-2 px-3 py-2 bg-blue-600 text-white rounded">
-                업로드
-              </button>
-              <div id="image-preview" class="grid grid-cols-8 gap-2 mt-3"></div>
-            </div>
-            <h4 class="font-medium mt-4">업로드 이력</h4>
-            <ul id="image-upload-list" class="text-sm space-y-1 mt-2"></ul>
-          </div>
+          <h2 class="text-xl font-medium mb-6">Image NAS 하이퍼파라미터 탐색</h2>
 
           <!-- 하이퍼파라미터 설정 구역 -->
           <div class="panel p-4 mb-6">
@@ -368,22 +353,7 @@
 
         <!-- Multi-modal NAS -->
         <section id="panel-multi" class="panel p-6 hidden">
-          <h2 class="text-xl font-medium mb-6">Multi-modal NAS 모델 탐색</h2>
-
-          <!-- 데이터 업로드 구역 -->
-          <div class="panel p-4 mb-6">
-            <h3 class="font-semibold mb-2">데이터 업로드 (이미지+텍스트)</h3>
-            <div class="border-dashed border-2 rounded p-4 text-center bg-gray-50">
-              <p>ZIP 파일 업로드</p>
-              <input id="multi-zip" type="file" accept=".zip" class="mt-3"/>
-              <button onclick="uploadFile('multi-zip','multi')" class="ml-2 px-3 py-2 bg-blue-600 text-white rounded">
-                업로드
-              </button>
-              <div id="multi-preview" class="grid grid-cols-8 gap-2 mt-3"></div>
-            </div>
-            <h4 class="font-medium mt-4">업로드 이력</h4>
-            <ul id="multi-upload-list" class="text-sm space-y-1 mt-2"></ul>
-          </div>
+          <h2 class="text-xl font-medium mb-6">Multi-modal NAS 하이퍼파라미터 탐색</h2>
 
           <!-- 하이퍼파라미터 설정 구역 -->
           <div class="panel p-4 mb-6">

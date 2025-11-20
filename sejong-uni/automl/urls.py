@@ -11,6 +11,8 @@ urlpatterns = [
     path('delete-search/', views.delete_search, name='delete-search'),
     path('start-image-retrain/', views.start_image_retrain, name='start-image-retrain'),
     path('', views.AutoML_view, name='AutoML'),
+    path('retrain/', views.Retrain_view, name='Retrain'),
+    path('hyperparameter/', views.Hyperparameter_view, name='Hyperparameter'),
     path("api/upload-zip/", views.upload_zip, name="upload_zip"),
     path("api/upload-list/", views.get_upload_list, name="get_upload_list")
 ]

@@ -6,6 +6,8 @@ import sys
 import zipfile
 import threading
 import signal
+import random
+import string
 
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
@@ -318,6 +320,12 @@ def start_multimodal_nas(request):
                 "nas_pid": nas_pid,
                 "exp_key": nas_exp_key
             })
+            
+        else:
+            return JsonResponse({
+            "status": "error",
+            "message": "EXP_KEY not received from nas.py"
+        }, status=500)
 
     except Exception as e:
         print("error", e)
@@ -451,21 +459,28 @@ def AutoML_view(request):
     return render(request, 'detail/AutoML.html', {'imageNas': obj_image, 'multimodalNas': obj_multi,
                                                   'page_obj_image': page_obj_image, 'page_obj_multi': page_obj_multi })
 
+def Retrain_view(request):
+    return render(request, 'detail/retrain.html')
+
+def Hyperparameter_view(request):
+    return render(request, 'detail/hyperparameter.html')
+
 @csrf_exempt
 def upload_zip(request):
     if request.method == "POST" and request.FILES.get("file"):
-        category = request.POST.get("category", "image")
+        category = request.POST.get("category")
         file = request.FILES["file"]
+        chars = string.ascii_letters + string.digits   # 영문 대소문자 + 숫자
+        result = ''.join(random.choices(chars, k=8))
+        file_name = file.name.replace(".zip", "") + '_' + result;
         
-        relative_path = f"uploads/{category}/{file.name}"
+        relative_path = f"uploads/{category}/{file_name} + 'zip'"
         zip_path = default_storage.save(relative_path, file)
         full_zip_path = os.path.join(settings.MEDIA_ROOT, zip_path)
-
-        #UploadedZip.objects.create(category=category, file=file_path)
         
          # 압축 해제할 폴더명 (zip 파일명 기반)
         extract_folder_name = file.name.replace(".zip", "")
-        extract_folder = os.path.join(settings.MEDIA_ROOT, "uploads", category, extract_folder_name)
+        extract_folder = os.path.join(settings.MEDIA_ROOT, "uploads", category, file_name + '.zip')
         os.makedirs(extract_folder, exist_ok=True)
         
         # ZIP 압축 해제
@@ -485,11 +500,11 @@ def upload_zip(request):
         preview_files = preview_files[:30]
         
         # DB 저장
-        #UploadedZip.objects.create(category=category, file=file_path)
+        #UploadedZip.objects.create(category=category, file=file_path, file_name)
 
         return JsonResponse({
             "success": True,
-            "filename": file.name,
+            "filename": file_name,
             "images": preview_files,  # 프론트에서 바로 미리보기 가능
         })
 
@@ -497,7 +512,18 @@ def upload_zip(request):
 
 
 def get_upload_list(request):
-    category = request.GET.get("category", "image")
+    category = request.GET.get("category")
     files = UploadedZip.objects.filter(category=category).order_by("-uploaded_at")
     data = [{"filename": os.path.basename(f.file.name), "uploaded_at": f.uploaded_at.strftime("%Y-%m-%d %H:%M:%S")} for f in files]
     return JsonResponse({"files": data})
+
+def upload_zip_delete(request):
+    category = request.POST.get("category")
+    file_name = request.POST.get("file_name")
+    file_path = f"uploads/midea/{category}/{file_name}.zip"
+    
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        print("삭제 완료")
+    else:
+        print("파일이 존재하지 않습니다.")
