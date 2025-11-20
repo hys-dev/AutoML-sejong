@@ -385,6 +385,51 @@ def end_multimodal_nas(request):
 
     return JsonResponse({"status": "stopped"})
 
+def start_image_retrain(request):
+    print("views.py start_image_nas")
+    user_id = "0"
+    if request.user.is_authenticated:
+        user_id = request.user.username
+
+    dataset_name = request.POST.get("dataset_name")
+    layer_candidates = request.POST.getlist('layer_candidates[]')  # 배열일 경우 getlist로 받고 이름 뒤에 꼭 [] 표시
+    max_epochs = request.POST.get('max_epochs')
+    strategy = request.POST.get('strategy')
+    batch_size = request.POST.get('batch_size')
+    learning_rate = request.POST.get('learning_rate')
+    momentum = request.POST.get('momentum')
+    weight_decay = request.POST.get('weight_decay')
+    gradient_clip_val = request.POST.get('gradient_clip')
+    width = request.POST.get('width')
+    num_of_cells = request.POST.get('num_of_cells')
+    aux_loss_weight = request.POST.get('aux_loss_weight')
+
+    print(dataset_name)
+
+    layer_candidates_json = json.dumps(layer_candidates)
+
+    image_nas_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../image_nas"))
+    retrain_py = os.path.join(image_nas_dir, "retrain.py")
+
+    cmd = [
+        sys.executable, retrain_py,
+        str(dataset_name),
+        layer_candidates_json,
+        str(max_epochs),
+        str(strategy),
+        str(batch_size),
+        str(learning_rate),
+        str(momentum),
+        str(weight_decay),
+        str(gradient_clip_val),
+        str(width),
+        str(num_of_cells),
+        str(aux_loss_weight),
+    ]
+
+def delete_search(request):
+    print("views.py delete_search")
+
 def AutoML_view(request):
     #추후 로그인한 사용자만 접근 가능하도록 수정
     user_id = "0"
